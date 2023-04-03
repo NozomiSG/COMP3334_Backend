@@ -11,8 +11,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class User {
+
     @TableId(type = IdType.AUTO)
     private Long userId;
+
     private String userName;
+
     private String userPassword;
+
+    private String userEmail;
+
+    private Integer activation_status;
+
+    private String activation_code;
 }
