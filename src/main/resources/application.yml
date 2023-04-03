@@ -13,7 +13,7 @@ spring:
     username: nozomisg@163.com
     from: nozomisg@163.com
     password: CBNKMZTAHCAJQYJN
-    port: 465
+    port: 25
     properties:
       mail:
         debug: true
@@ -27,7 +27,7 @@ spring:
   redis:
     database: 0
     host: 127.0.0.1
-    port: 6380
+    port: 6379
     timeout: 300
     lettuce:
       shutdown-timeout: 100

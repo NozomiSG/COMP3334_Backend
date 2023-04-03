@@ -84,10 +84,9 @@ public class UserController {
         }
         String uuid = generateCode();
         mailService.sentSimpleMail(to,
-                "[The HK Polytechnic University] Verification Code",
+                "[P2P Mall verification code] Welcome!",
                 "Your verification code is:\n" +
-                        uuid + "\n" +
-                        "It will expire after 5 mins\n");
+                        uuid + "\n" + "It will expire after 5 mins\n");
         redisUtils.setCacheWithExpire(to, uuid, 5);
         map.put("resultCode", "1");
         map.put("resultMsg", "verify accept: verification code sent");
@@ -106,6 +105,7 @@ public class UserController {
             log.info("login reject: no such user");
             map.put("resultMsg", "login reject: no such user");
             map.put("data", "reject");
+            return map;
         }
         // verify password
         if (pwd.equals(queryResult.getUserPassword())) {

@@ -20,8 +20,4 @@ public class User {
     private String userPassword;
 
     private String userEmail;
-
-    private Integer activation_status;
-
-    private String activation_code;
 }
