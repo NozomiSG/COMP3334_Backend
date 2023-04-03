@@ -1,7 +1,8 @@
-package com.mybatisplus_test.controller;
+package com.mybatisplus_comp3334.controller;
 
-import com.mybatisplus_test.entity.User;
-import com.mybatisplus_test.mapper.UserMapper;
+
+import com.mybatisplus_comp3334.entity.User;
+import com.mybatisplus_comp3334.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

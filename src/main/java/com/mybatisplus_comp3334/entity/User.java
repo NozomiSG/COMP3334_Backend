@@ -1,4 +1,4 @@
-package com.mybatisplus_test.entity;
+package com.mybatisplus_comp3334.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;

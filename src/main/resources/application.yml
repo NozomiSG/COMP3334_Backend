@@ -1,1 +1,10 @@
-
+server:
+  port: 8088
+spring:
+  application:
+    name:  COMP3334
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ServerDB
+    username: 'root'
+    password: '666666'

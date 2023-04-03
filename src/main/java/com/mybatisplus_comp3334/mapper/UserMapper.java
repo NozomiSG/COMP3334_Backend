@@ -1,7 +1,8 @@
-package com.mybatisplus_test.mapper;
+package com.mybatisplus_comp3334.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.mybatisplus_test.entity.User;
+import com.mybatisplus_comp3334.entity.User;
+
 
 public interface UserMapper extends BaseMapper<User> {
 
