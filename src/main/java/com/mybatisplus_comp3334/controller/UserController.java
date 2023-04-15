@@ -5,10 +5,12 @@ import com.mybatisplus_comp3334.service.concept.MailService;
 import com.mybatisplus_comp3334.service.concept.UserService;
 import com.mybatisplus_comp3334.entity.User;
 import com.mybatisplus_comp3334.util.RedisUtils;
+import com.mybatisplus_comp3334.util.EncryptionUtils;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,13 +28,15 @@ public class UserController {
     @Autowired
     RedisUtils redisUtils;
 
+    EncryptionUtils encryptionUtils;
+
     @RequestMapping(value = "/")
     public String index(){
         return "index";
     }
 
     @PostMapping("/register")
-    public Map<String, Object> register(@ModelAttribute User user, @RequestParam String verificationCode) {
+    public Map<String, Object> register(@ModelAttribute User user, @RequestParam String verificationCode) throws NoSuchAlgorithmException {
         log.info("register request");
         Map<String, Object> map = new HashMap<>(4);
         if (user == null) {
@@ -56,6 +60,10 @@ public class UserController {
             }
             else {
                 log.info("register accept");
+                log.info("Generate user public key and private key");
+                String[] keyPair = encryptionUtils.generateKeyPair();
+                user.setPrivateKey(keyPair[0]);
+                user.setPublicKey(keyPair[1]);
                 userService.insertUserInfo(user);
                 map.put("resultCode", "1");
                 map.put("resultMsg", "register accept");

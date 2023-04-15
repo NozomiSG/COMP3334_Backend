@@ -11,7 +11,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 public class EncryptionUtils {
 
-    public String[] getKeyPair() throws NoSuchAlgorithmException {
+    public String[] generateKeyPair() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
         keyPairGen.initialize(1024,new SecureRandom());
         KeyPair keyPair = keyPairGen.generateKeyPair();

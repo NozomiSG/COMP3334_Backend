@@ -20,8 +20,6 @@ public class Estate {
 
     private Long estateOwnerId;
 
-    private String estateOwnerName;
-
     private Integer estatePrice;
 
     private String estateImage;

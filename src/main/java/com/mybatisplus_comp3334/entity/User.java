@@ -20,4 +20,8 @@ public class User {
     private String userPassword;
 
     private String userEmail;
+
+    private String privateKey;
+
+    private String publicKey;
 }
