@@ -1,6 +1,7 @@
 package com.mybatisplus_comp3334.controller;
 
 
+import com.baomidou.mybatisplus.core.toolkit.AES;
 import com.mybatisplus_comp3334.service.concept.MailService;
 import com.mybatisplus_comp3334.service.concept.UserService;
 import com.mybatisplus_comp3334.entity.User;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @Log
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/user-login")
 public class UserController {
 
@@ -78,6 +81,7 @@ public class UserController {
     }
 
     @GetMapping("/email-verify")
+    @ResponseBody
     public Map<String, Object> emailVerify(@RequestParam String to) {
         Map<String, Object> map = new HashMap<>(3);
         log.info("email verify request");
@@ -120,7 +124,7 @@ public class UserController {
             log.info("login accept");
             map.replace("resultCode", "1");
             map.put("resultMsg", "login accept");
-            Map<String, String> tem = new HashMap<String, String>(4);
+            Map<String, String> tem = new HashMap<>(4);
             tem.put("name", queryResult.getUserName());
             tem.put("id", queryResult.getUserId().toString());
             tem.put("email", queryResult.getUserEmail());
@@ -135,13 +139,92 @@ public class UserController {
         return map;
     }
 
+    @GetMapping("/email-login")
+    public Map<String, Object> emailLogin(@RequestParam String email) {
+        Map<String, Object> map = new HashMap<>(3);
+        log.info("email verify request");
+        log.info("Check whether already register");
+        User checkUser = userService.selectUserByEmail(email);
+        if (checkUser == null) {
+            log.info("email haven't registered");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "verify reject: email haven't registered");
+            map.put("data", "reject");
+        }
+        else {
+            log.info("Generate key for verifying user identity");
+            String key = generateKey();
+            redisUtils.setCacheWithExpire(email, key, 5);
+            log.info("Send key to user");
+            map.put("resultCode", "1");
+            map.put("resultMsg", "verify accept: key sent");
+            map.put("data", key);
+        }
+        return map;
+    }
+
+    @GetMapping("/password-verify")
+    public Map<String, Object> passwordVerify(@RequestParam String email, @RequestParam String encryptedKey) {
+        Map<String, Object> map = new HashMap<>(3);
+        log.info("Check whether already register");
+        User checkUser = userService.selectUserByEmail(email);
+        if (checkUser == null) {
+            log.info("email haven't registered");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "verify reject: email haven't registered");
+            map.put("data", "reject");
+            return map;
+        }
+        log.info("Check whether key exists");
+        String storedKey = (String)redisUtils.getCache(email);
+        if (storedKey == null) {
+            log.info("verify reject: not find key");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "verify reject: not find key");
+            map.put("data", "reject");
+            return map;
+        }
+        log.info("check whether key is matched");
+        String encryptedPassword = AES.encrypt(checkUser.getUserPassword(), storedKey);
+        if (!encryptedPassword.equals(encryptedKey)) {
+            log.info("verify reject: unmatched key");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "verify reject: unmatched key");
+            map.put("data", "reject");
+        } else {
+            log.info("login accept");
+            map.put("resultCode", "1");
+            map.put("resultMsg", "login accept");
+            Map<String, String> tem = new HashMap<>(4);
+            tem.put("name", checkUser.getUserName());
+            tem.put("id", checkUser.getUserId().toString());
+            tem.put("email", checkUser.getUserEmail());
+            log.info(tem.toString());
+            map.put("data", tem);
+        }
+        return map;
+    }
+
+
+
+
     private static String generateCode() {
         long codeL = System.nanoTime();
         String codeStr = Long.toString(codeL);
         return codeStr.substring(codeStr.length() - 6);
     }
 
+    private static String generateKey() {
+        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            int number = random.nextInt(62);
+            stringBuilder.append(str.charAt(number));
+        }
+        return stringBuilder.toString();
 
+    }
 
 
 
