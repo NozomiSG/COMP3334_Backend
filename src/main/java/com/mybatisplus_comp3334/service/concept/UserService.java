@@ -1,4 +1,4 @@
-package com.mybatisplus_comp3334.service;
+package com.mybatisplus_comp3334.service.concept;
 
 import com.mybatisplus_comp3334.entity.User;
 

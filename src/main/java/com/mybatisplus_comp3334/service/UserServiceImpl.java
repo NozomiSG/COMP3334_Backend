@@ -1,11 +1,9 @@
-package com.mybatisplus_comp3334.service.impl;
+package com.mybatisplus_comp3334.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.mybatisplus_comp3334.entity.User;
 import com.mybatisplus_comp3334.mapper.UserMapper;
-import com.mybatisplus_comp3334.service.MailService;
-import com.mybatisplus_comp3334.service.UserService;
-import com.mybatisplus_comp3334.util.RedisUtils;
+import com.mybatisplus_comp3334.service.concept.UserService;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

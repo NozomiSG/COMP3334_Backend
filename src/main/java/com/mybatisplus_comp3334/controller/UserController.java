@@ -1,8 +1,8 @@
 package com.mybatisplus_comp3334.controller;
 
 
-import com.mybatisplus_comp3334.service.MailService;
-import com.mybatisplus_comp3334.service.UserService;
+import com.mybatisplus_comp3334.service.concept.MailService;
+import com.mybatisplus_comp3334.service.concept.UserService;
 import com.mybatisplus_comp3334.entity.User;
 import com.mybatisplus_comp3334.util.RedisUtils;
 import lombok.extern.java.Log;
