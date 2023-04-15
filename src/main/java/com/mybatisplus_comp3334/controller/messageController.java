@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class messageController {
-
+	private static Map<Integer, String> keyMap = new HashMap<Integer, String>();
 	//defined pack for message transport, which requires userID and respective text message sent
 	public class msgpack{
 		 private Long userId;
