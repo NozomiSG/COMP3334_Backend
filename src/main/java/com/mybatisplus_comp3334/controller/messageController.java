@@ -21,7 +21,7 @@ public class messageController {
 		 private Long userId;
 		 private String textMsg;
 
-		 public void __init__(Long ID, Sting str) {
+		 public void __init__(Long ID, String str) {
 			this.userID = ID;
 			this.textMsg = str;
 		 }
