@@ -64,12 +64,12 @@ public class messageController {
 		return Str;
 	}
 
-	public static msgpack encryptPack(msgpack pack){
+	public msgpack encryptPack(msgpack pack){
 		msgpack retPack = new msgpack().__init__(pack.userId, encrypt(pack.textMsg, keyMap.get(0)));
 		return retPack;
 	}
 
-	public static msgpack decryptPack(msgpack pack){
+	public msgpack decryptPack(msgpack pack){
 		msgpack retPack = new msgpack().__init__(pack.userId, decrypt(pack.textMsg, keyMap.get(0)));
 		return retPack;
 	}
