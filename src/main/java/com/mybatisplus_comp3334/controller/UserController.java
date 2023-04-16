@@ -1,7 +1,6 @@
 package com.mybatisplus_comp3334.controller;
 
 
-import com.baomidou.mybatisplus.core.toolkit.AES;
 import com.mybatisplus_comp3334.service.concept.MailService;
 import com.mybatisplus_comp3334.service.concept.UserService;
 import com.mybatisplus_comp3334.entity.User;
@@ -197,6 +196,8 @@ public class UserController {
         String encryptedPassword = aesUtils.Encrypt(checkUser.getUserPassword(), storedKey, "0000000000000000");
         if (!encryptedPassword.equals(encryptedKey)) {
             log.info("verify reject: unmatched key");
+            log.info("encrypted of real password:"+encryptedPassword);
+            log.info("encrypted from user:"+encryptedKey);
             map.put("resultCode", "0");
             map.put("resultMsg", "verify reject: unmatched key");
             map.put("data", "reject");
@@ -205,18 +206,38 @@ public class UserController {
             map.put("resultCode", "1");
             map.put("resultMsg", "login accept");
             log.info("Generate dynamic RSA for transformation encryption");
-            encryptionUtils.generateKeyPair();
+            String[] keypair = encryptionUtils.generateKeyPair();
+            log.info("Store dynamic RSA private key in redis");
+            // Password will be stored in redis for 200mins
+            redisUtils.setCacheWithExpire(checkUser.getUserId()+"_privateKey", keypair[1], 200);
             Map<String, String> tem = new HashMap<>(4);
             tem.put("id", checkUser.getUserId().toString());
             tem.put("email", checkUser.getUserEmail());
-
+            tem.put("publicKey", keypair[0]);
             log.info(tem.toString());
             map.put("data", tem);
         }
         return map;
     }
 
-
+    @GetMapping("/connect-establishment")
+    public Map<String, Object> receiveRSAFromUser(@RequestParam Long id, @RequestParam String encryptedPublicKey) throws Exception {
+        Map<String, Object> map = new HashMap<>(3);
+        log.info("Get private key from redis");
+        String privateKey = (String)redisUtils.getCache(id+"_privateKey");
+        if (privateKey == null) {
+            log.info("verify reject: not find key");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "verify reject: not find key");
+            map.put("data", "reject");
+            return map;
+        }
+        log.info("Decrypt public key from user");
+        String publicKeyFromUser = encryptionUtils.decrypt(encryptedPublicKey, privateKey);
+        log.info("Store public key in redis");
+        redisUtils.setCacheWithExpire(id+"_publicKey", publicKeyFromUser, 200);
+        return map;
+    }
 
 
     private static String generateCode() {

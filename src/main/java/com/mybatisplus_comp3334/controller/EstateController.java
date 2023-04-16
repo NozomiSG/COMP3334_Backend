@@ -2,6 +2,9 @@ package com.mybatisplus_comp3334.controller;
 
 
 import com.mybatisplus_comp3334.entity.Estate;
+import com.mybatisplus_comp3334.service.concept.UserService;
+import com.mybatisplus_comp3334.util.EncryptionUtils;
+import com.mybatisplus_comp3334.util.RedisUtils;
 import lombok.Generated;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,15 @@ public class EstateController {
 
     @Autowired
     private EstateService estateService;
+
+    @Autowired
+    EncryptionUtils encryptionUtils;
+
+    @Autowired
+    RedisUtils redisUtils;
+
+    @Autowired
+    UserService userService;
 
 
     @RequestMapping(value = "/")
@@ -93,5 +105,38 @@ public class EstateController {
         return map;
     }
 
+    @GetMapping("/request-estate-info-from-user")
+    public Map<String, Object> requestEstateInfoFromUser(@RequestParam Long id, @RequestParam String encryptedUserId) throws Exception {
+        Map<String, Object> map = new HashMap<>(3);
+
+        log.info("get private key by email");
+        String privateKey = (String)redisUtils.getCache(id+"_privateKey");
+        String publicKey = (String)redisUtils.getCache(id+"_publicKey");
+        if (privateKey == null||publicKey == null) {
+            log.info("verify reject: not find key");
+            map.put("resultCode", "-1");
+            map.put("resultMsg", "verify reject: not find key");
+            map.put("data", "reject");
+            return map;
+        }
+
+        log.info("Decrypting user id by private key");
+        Long userId = Long.parseLong(encryptionUtils.decrypt(encryptedUserId, privateKey));
+
+        log.info("request estate info from user request");
+        if (userService.selectUserInfoById(userId) == null) {
+            log.info("request estate info from user reject: invalid request");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "request estate info from user reject: invalid request");
+            map.put("data", "reject");
+        } else {
+            String encryptedEstateInfo = encryptionUtils.encrypt(estateService.selectEstateInfoByOwnerId(userId).toString(), publicKey);
+            log.info("request estate info from user accept");
+            map.put("resultCode", "1");
+            map.put("resultMsg", "request estate info from user accept");
+            map.put("data", encryptedEstateInfo);
+        }
+        return map;
+    }
 
 }
