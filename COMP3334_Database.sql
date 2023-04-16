@@ -32,13 +32,9 @@ create table estate
 
 
 insert into user (user_password, user_email) values
-                                                            ('password1', 'zgy.peter@gmail.com'),
-#                                                             ('user2', '123456', '1762513582@qq.com'),
-                                                            ('zsh', '912@comp3334.com'),
-                                                            ('4r6', '777@comp3334.com'),
-                                                            ('54h', '896@comp3334.com'),
-                                                            ('f45', '845@comp3334.com'),
-                                                            ('dc3', '344@comp3334.com');
+                                                            ('P@ssword1', 'zgy.peter@gmail.com'),
+                                                            ('123*5678Aa', '1762513582@qq.com'),
+                                                            ('zsBdg*e32regh', '912@comp3334.com');
 
 
 insert into estate (estate_name, estate_description, estate_owner_id, estate_price) values
