@@ -30,6 +30,18 @@ create table estate
         primary key (estate_id)
 );
 
+create table transaction
+(
+    trans_id     int auto_increment,
+    trans_estate_id int null,
+    trans_buyer_id  int null,
+    trans_seller_id  int null,
+    trans_time    int null,
+
+        constraint table_name_pk
+        primary key (trans_id)
+);
+
 
 insert into user (user_password, user_email) values
                                                             ('P@ssword1', 'zgy.peter@gmail.com'),
