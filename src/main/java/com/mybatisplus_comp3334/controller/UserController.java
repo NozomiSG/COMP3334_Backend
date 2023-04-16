@@ -5,12 +5,19 @@ import com.baomidou.mybatisplus.core.toolkit.AES;
 import com.mybatisplus_comp3334.service.concept.MailService;
 import com.mybatisplus_comp3334.service.concept.UserService;
 import com.mybatisplus_comp3334.entity.User;
+import com.mybatisplus_comp3334.util.AESUtils;
 import com.mybatisplus_comp3334.util.RedisUtils;
 import com.mybatisplus_comp3334.util.EncryptionUtils;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +38,11 @@ public class UserController {
     @Autowired
     RedisUtils redisUtils;
 
+    @Autowired
     EncryptionUtils encryptionUtils;
+
+    @Autowired
+    AESUtils aesUtils;
 
     @RequestMapping(value = "/")
     public String index(){
@@ -71,7 +82,6 @@ public class UserController {
                 map.put("resultCode", "1");
                 map.put("resultMsg", "register accept");
                 Map<String, String> tem = new HashMap<>(4);
-                tem.put("name", user.getUserName());
                 tem.put("id", user.getUserId().toString());
                 tem.put("email", user.getUserEmail());
                 map.put("data", tem);
@@ -125,7 +135,6 @@ public class UserController {
             map.replace("resultCode", "1");
             map.put("resultMsg", "login accept");
             Map<String, String> tem = new HashMap<>(4);
-            tem.put("name", queryResult.getUserName());
             tem.put("id", queryResult.getUserId().toString());
             tem.put("email", queryResult.getUserEmail());
             log.info(tem.toString());
@@ -155,7 +164,7 @@ public class UserController {
             log.info("Generate key for verifying user identity");
             String key = generateKey();
             redisUtils.setCacheWithExpire(email, key, 5);
-            log.info("Send key to user");
+            log.info("Send key to user, key:"+key);
             map.put("resultCode", "1");
             map.put("resultMsg", "verify accept: key sent");
             map.put("data", key);
@@ -164,7 +173,7 @@ public class UserController {
     }
 
     @GetMapping("/password-verify")
-    public Map<String, Object> passwordVerify(@RequestParam String email, @RequestParam String encryptedKey) {
+    public Map<String, Object> passwordVerify(@RequestParam String email, @RequestParam String encryptedKey) throws InvalidAlgorithmParameterException, UnsupportedEncodingException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Map<String, Object> map = new HashMap<>(3);
         log.info("Check whether already register");
         User checkUser = userService.selectUserByEmail(email);
@@ -185,7 +194,7 @@ public class UserController {
             return map;
         }
         log.info("check whether key is matched");
-        String encryptedPassword = AES.encrypt(checkUser.getUserPassword(), storedKey);
+        String encryptedPassword = aesUtils.Encrypt(checkUser.getUserPassword(), storedKey, "0000000000000000");
         if (!encryptedPassword.equals(encryptedKey)) {
             log.info("verify reject: unmatched key");
             map.put("resultCode", "0");
@@ -195,10 +204,12 @@ public class UserController {
             log.info("login accept");
             map.put("resultCode", "1");
             map.put("resultMsg", "login accept");
+            log.info("Generate dynamic RSA for transformation encryption");
+            encryptionUtils.generateKeyPair();
             Map<String, String> tem = new HashMap<>(4);
-            tem.put("name", checkUser.getUserName());
             tem.put("id", checkUser.getUserId().toString());
             tem.put("email", checkUser.getUserEmail());
+
             log.info(tem.toString());
             map.put("data", tem);
         }

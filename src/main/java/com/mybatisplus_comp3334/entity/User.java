@@ -15,8 +15,6 @@ public class User {
     @TableId(type = IdType.AUTO)
     private Long userId;
 
-    private String userName;
-
     private String userPassword;
 
     private String userEmail;

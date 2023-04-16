@@ -13,6 +13,7 @@ import java.util.Map;
 
 @Log
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/transaction")
 public class EstateController {
 

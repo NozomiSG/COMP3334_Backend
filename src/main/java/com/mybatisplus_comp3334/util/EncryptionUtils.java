@@ -1,6 +1,7 @@
 package com.mybatisplus_comp3334.util;
 
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
 import java.security.*;
@@ -9,6 +10,7 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
+@Component
 public class EncryptionUtils {
 
     public String[] generateKeyPair() throws NoSuchAlgorithmException {

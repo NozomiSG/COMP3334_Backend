@@ -1,5 +1,7 @@
 package com.mybatisplus_comp3334.util;
 
+import org.springframework.stereotype.Component;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
@@ -10,12 +12,13 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
-public class AES {
+@Component
+public class AESUtils {
 
-    private static String Encrypt(String sSrc, String sKey, String sIv) throws UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+    public String Encrypt(String sSrc, String sKey, String sIv) throws UnsupportedEncodingException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
         // TODO Auto-generated method stub
-
         String result;//
 
         if (sKey == null) {
@@ -34,24 +37,8 @@ public class AES {
         cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv);
         byte[] encrypted = cipher.doFinal(sSrc.getBytes());
         //return new Base64().encode(encrypted);
-
-        result = byteToHex(encrypted);//byte transform into hex output
-
+        result = Base64.getEncoder().encodeToString(encrypted);//byte transform into hex output
         return result;
-
     }
 
-    private static String byteToHex(byte[] bytes) {
-        // TODO Auto-generated method stub
-
-        StringBuffer sb = new StringBuffer();
-        for(int i = 0; i < bytes.length; i++) {
-            String hex = Integer.toHexString(bytes[i] & 0xFF);
-            if(hex.length() < 2){
-                sb.append(0);
-            }
-            sb.append(hex);
-        }
-        return sb.toString();
-    }
 }
