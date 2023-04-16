@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TransactionRecord {
 
+    private Long transId;
+
     private Long estateId;
 
     private Long sellerId;

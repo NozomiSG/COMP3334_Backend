@@ -17,7 +17,7 @@ import java.util.Map;
 @Log
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/transaction")
+@RequestMapping("/estate")
 public class EstateController {
 
     @Autowired
