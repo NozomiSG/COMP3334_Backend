@@ -139,7 +139,7 @@ public class EstateController {
         return map;
     }
 
-    @GetMapping("/request-estate-all-info")
+    @GetMapping("/request-all-estate-info")
     public Map<String, Object> requestEstateAllInfo(@RequestParam Long id) throws Exception {
         Map<String, Object> map = new HashMap<>(3);
 

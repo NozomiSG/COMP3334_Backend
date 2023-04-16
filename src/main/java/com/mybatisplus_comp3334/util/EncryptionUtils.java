@@ -4,6 +4,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.Cipher;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
@@ -13,7 +14,7 @@ import java.security.spec.X509EncodedKeySpec;
 @Component
 public class EncryptionUtils {
 
-    public static String[] generateKeyPair() throws NoSuchAlgorithmException {
+    public String[] generateKeyPair() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
         keyPairGen.initialize(2048,new SecureRandom());
         KeyPair keyPair = keyPairGen.generateKeyPair();
@@ -26,19 +27,19 @@ public class EncryptionUtils {
         return new String[]{publicKeyString, privateKeyString};
     }
 
-    public static String encrypt(String str, String publicKey) throws Exception{
+    public String encrypt(String str, String publicKey) throws Exception{
         //base64 encoded public key
         byte[] decoded = Base64.decodeBase64(publicKey);
         RSAPublicKey pubKey = (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(decoded));
         //RSA encryption
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.ENCRYPT_MODE, pubKey);
-        String Str = Base64.encodeBase64String(cipher.doFinal(str.getBytes("UTF-8")));
+        String Str = Base64.encodeBase64String(cipher.doFinal(str.getBytes(StandardCharsets.UTF_8)));
         return Str;
     }
 
-    public static String decrypt(String str, String privateKey) throws Exception {
-        byte[] inputByte = Base64.decodeBase64(str.getBytes("UTF-8"));
+    public String decrypt(String str, String privateKey) throws Exception {
+        byte[] inputByte = Base64.decodeBase64(str.getBytes(StandardCharsets.UTF_8));
         //base64 encoded private key
         byte[] decoded = Base64.decodeBase64(privateKey);
         RSAPrivateKey priKey = (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(decoded));
@@ -49,7 +50,4 @@ public class EncryptionUtils {
         return Str;
     }
 
-    public static void main(String[] args) {
-
-    }
 }
