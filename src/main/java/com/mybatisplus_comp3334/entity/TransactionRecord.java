@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TransactionRecord {
 
+    @TableId(type = IdType.AUTO)
     private Long transId;
 
     private Long estateId;

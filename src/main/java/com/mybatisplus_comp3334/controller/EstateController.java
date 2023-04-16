@@ -105,8 +105,8 @@ public class EstateController {
         return map;
     }
 
-    @GetMapping("/request-estate-info-from-user")
-    public Map<String, Object> requestEstateInfoFromUser(@RequestParam Long id, @RequestParam String encryptedUserId) throws Exception {
+    @GetMapping("/request-self-estate-info")
+    public Map<String, Object> requestEstateInfoFromUser(@RequestParam Long id) throws Exception {
         Map<String, Object> map = new HashMap<>(3);
 
         log.info("get private key by id");
@@ -120,17 +120,14 @@ public class EstateController {
             return map;
         }
 
-        log.info("Decrypting user id by private key");
-        Long userId = Long.parseLong(encryptionUtils.decrypt(encryptedUserId, privateKey));
-
         log.info("request estate info from user request");
-        if (estateService.selectEstateInfoByOwnerId(userId) == null) {
+        if (estateService.selectEstateInfoByOwnerId(id) == null) {
             log.info("request estate info from user reject: invalid request");
             map.put("resultCode", "0");
             map.put("resultMsg", "request estate info from user reject: invalid request");
             map.put("data", "reject");
         } else {
-            String encryptedEstateInfo = encryptionUtils.encrypt(estateService.selectEstateInfoByOwnerId(userId).toString(), publicKey);
+            String encryptedEstateInfo = encryptionUtils.encrypt(estateService.selectEstateInfoByOwnerId(id).toString(), publicKey);
             log.info("request estate info from user accept");
             map.put("resultCode", "1");
             map.put("resultMsg", "request estate info from user accept");
