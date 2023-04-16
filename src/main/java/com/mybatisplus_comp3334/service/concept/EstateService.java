@@ -10,5 +10,5 @@ public interface EstateService {
     String deleteEstateInfo(Estate estate);
     Estate selectEstateInfoById(Long id);
     List<Estate> selectEstateInfoByOwnerId(Long ownerId);
-//    List<Estate> selectAllEstateInfo();
+    List<Estate> selectAllEstateInfo();
 }

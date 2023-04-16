@@ -80,6 +80,17 @@ public class EstateServiceImpl implements EstateService {
         }
     }
 
+    @Override
+    public List<Estate> selectAllEstateInfo() {
+        log.info("Select all estate info");
+        if (estateMapper.selectList(null) != null) {
+            log.info("Success to select all estate info");
+            return estateMapper.selectList(null);
+        } else {
+            log.info("Fail to select all estate info");
+            return null;
+        }
+    }
 
 
 }

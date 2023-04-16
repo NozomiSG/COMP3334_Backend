@@ -13,9 +13,9 @@ import java.security.spec.X509EncodedKeySpec;
 @Component
 public class EncryptionUtils {
 
-    public String[] generateKeyPair() throws NoSuchAlgorithmException {
+    public static String[] generateKeyPair() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGen = KeyPairGenerator.getInstance("RSA");
-        keyPairGen.initialize(1024,new SecureRandom());
+        keyPairGen.initialize(2048,new SecureRandom());
         KeyPair keyPair = keyPairGen.generateKeyPair();
         RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();   // obtain private key
         RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();  // obtain public key
@@ -26,7 +26,7 @@ public class EncryptionUtils {
         return new String[]{publicKeyString, privateKeyString};
     }
 
-    public String encrypt(String str, String publicKey) throws Exception{
+    public static String encrypt(String str, String publicKey) throws Exception{
         //base64 encoded public key
         byte[] decoded = Base64.decodeBase64(publicKey);
         RSAPublicKey pubKey = (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(decoded));
@@ -37,7 +37,7 @@ public class EncryptionUtils {
         return Str;
     }
 
-    public String decrypt(String str, String privateKey) throws Exception {
+    public static String decrypt(String str, String privateKey) throws Exception {
         byte[] inputByte = Base64.decodeBase64(str.getBytes("UTF-8"));
         //base64 encoded private key
         byte[] decoded = Base64.decodeBase64(privateKey);
@@ -47,5 +47,9 @@ public class EncryptionUtils {
         cipher.init(Cipher.DECRYPT_MODE, priKey);
         String Str = new String(cipher.doFinal(inputByte));
         return Str;
+    }
+
+    public static void main(String[] args) {
+
     }
 }

@@ -109,7 +109,7 @@ public class EstateController {
     public Map<String, Object> requestEstateInfoFromUser(@RequestParam Long id, @RequestParam String encryptedUserId) throws Exception {
         Map<String, Object> map = new HashMap<>(3);
 
-        log.info("get private key by email");
+        log.info("get private key by id");
         String privateKey = (String)redisUtils.getCache(id+"_privateKey");
         String publicKey = (String)redisUtils.getCache(id+"_publicKey");
         if (privateKey == null||publicKey == null) {
@@ -124,7 +124,7 @@ public class EstateController {
         Long userId = Long.parseLong(encryptionUtils.decrypt(encryptedUserId, privateKey));
 
         log.info("request estate info from user request");
-        if (userService.selectUserInfoById(userId) == null) {
+        if (estateService.selectEstateInfoByOwnerId(userId) == null) {
             log.info("request estate info from user reject: invalid request");
             map.put("resultCode", "0");
             map.put("resultMsg", "request estate info from user reject: invalid request");
@@ -139,4 +139,33 @@ public class EstateController {
         return map;
     }
 
+    @GetMapping("/request-estate-all-info")
+    public Map<String, Object> requestEstateAllInfo(@RequestParam Long id) throws Exception {
+        Map<String, Object> map = new HashMap<>(3);
+
+        log.info("get private key by id");
+        String privateKey = (String)redisUtils.getCache(id+"_privateKey");
+        String publicKey = (String)redisUtils.getCache(id+"_publicKey");
+        if (privateKey == null||publicKey == null) {
+            log.info("verify reject: not find key");
+            map.put("resultCode", "-1");
+            map.put("resultMsg", "verify reject: not find key");
+            map.put("data", "reject");
+            return map;
+        }
+        log.info("request estate all info request");
+        if (estateService.selectAllEstateInfo() == null) {
+            log.info("request estate all info reject: invalid request");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "request estate all info reject: invalid request");
+            map.put("data", "reject");
+        } else {
+            String encryptedEstateInfo = encryptionUtils.encrypt(estateService.selectAllEstateInfo().toString(), publicKey);
+            log.info("request estate all info accept");
+            map.put("resultCode", "1");
+            map.put("resultMsg", "request estate all info accept");
+            map.put("data", encryptedEstateInfo);
+        }
+        return map;
+    }
 }

@@ -221,7 +221,7 @@ public class UserController {
     }
 
     @GetMapping("/connect-establishment")
-    public Map<String, Object> receiveRSAFromUser(@RequestParam Long id, @RequestParam String encryptedPublicKey) throws Exception {
+    public Map<String, Object> receiveRSAFromUser(@RequestParam Long id, @RequestParam String publicKey) throws Exception {
         Map<String, Object> map = new HashMap<>(3);
         log.info("Get private key from redis");
         String privateKey = (String)redisUtils.getCache(id+"_privateKey");
@@ -232,10 +232,8 @@ public class UserController {
             map.put("data", "reject");
             return map;
         }
-        log.info("Decrypt public key from user");
-        String publicKeyFromUser = encryptionUtils.decrypt(encryptedPublicKey, privateKey);
         log.info("Store public key in redis");
-        redisUtils.setCacheWithExpire(id+"_publicKey", publicKeyFromUser, 200);
+        redisUtils.setCacheWithExpire(id+"_publicKey", publicKey, 200);
         return map;
     }
 
