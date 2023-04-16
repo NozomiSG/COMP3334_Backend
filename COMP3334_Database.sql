@@ -32,7 +32,7 @@ create table transaction
     trans_estate_id int null,
     trans_buyer_id  int null,
     trans_seller_id  int null,
-    trans_time    int null,
+    trans_time    timestamp null,
 
         constraint table_name_pk
         primary key (trans_id)
