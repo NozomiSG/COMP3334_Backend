@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public interface TransactionRecord {
+public class TransactionRecord {
 
     private Long estateId;
 
