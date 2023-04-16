@@ -20,6 +20,12 @@ public class TransactionController {
     @Autowired
     private TransactionService transactionService;
 
+    @Autowired
+    private EstateService estateService;
+
+    @Autowired
+    private Estate estate;
+
     @PostMapping("/insert-transaction")
     public Map<String, Object> insertTransaction(@ModelAttribute TransactionRecord transaction) {
         log.info("insert transaction request");
@@ -32,11 +38,18 @@ public class TransactionController {
         } else {
             log.info("insert transaction accept");
             transactionService.insertTransactionInfo(transaction);
+
+            estate = estateService.selectEstateInfoById(transaction.getEstateId());
+            estate.setEstateOwnerId(transaction.getBuyerId());
+            estateService.updateEstateInfo(estate);
+
             map.put("resultCode", "1");
             map.put("resultMsg", "insert transaction accept");
             map.put("data", "");
+
         }
         return map;
     }
+
 
 }
