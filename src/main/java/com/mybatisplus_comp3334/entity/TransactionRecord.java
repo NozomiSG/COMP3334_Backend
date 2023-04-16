@@ -20,6 +20,6 @@ public class TransactionRecord {
 
     private Long buyerId;
 
-    private String transactionTime;
+    private java.sql.Timestamp transactionTime;
 
 }

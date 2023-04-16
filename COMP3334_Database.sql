@@ -9,8 +9,6 @@ create table user
     private_key   varchar(1200) null,
     public_key    varchar(1200) null,
 
-    #to be completed: encryption variables
-
     constraint table_name_pk
         primary key (user_id)
 );
@@ -23,8 +21,6 @@ create table estate
     estate_owner_id  int null,
     estate_price int null,
     estate_image varchar(40) null,
-
-    #to be completed: encryption variables
 
     constraint table_name_pk
         primary key (estate_id)

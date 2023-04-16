@@ -38,6 +38,8 @@ public class TransactionController {
             transactionService.insertTransactionInfo(transaction);
 
             estateService.selectEstateInfoById(transaction.getEstateId()).setEstateOwnerId(transaction.getBuyerId());
+            //Switch owner for the estate
+
 
             map.put("resultCode", "1");
             map.put("resultMsg", "insert transaction accept");
