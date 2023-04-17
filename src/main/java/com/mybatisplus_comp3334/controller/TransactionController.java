@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -67,6 +68,8 @@ public class TransactionController {
 
         try { //sample json format: "{}"
             new ObjectMapper().readTree(transString_decrypted);
+
+            Date date = new Date();
             Timestamp currentTime = new Timestamp(date.getTime());
 
             Estate estate = new Estate();
