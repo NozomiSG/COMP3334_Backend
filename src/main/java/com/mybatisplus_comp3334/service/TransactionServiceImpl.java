@@ -46,10 +46,10 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<Transaction> selectTransactionInfoByBuyerId(Long BuyerId) {
         log.info("Select transaction info by buyer id");
-        transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("trans_buyer_id", BuyerId));
-        if (transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("trans_buyer_id", BuyerId)) != null) {
+//        transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("buyer_id", BuyerId));
+        if (transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("buyer_id", BuyerId)) != null) {
             log.info("Success to select transaction info by buyer id");
-            return transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("trans_buyer_id", BuyerId));
+            return transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("buyer_id", BuyerId));
         } else {
             log.info("Fail to select transaction info by buyer id");
             return null;
@@ -59,8 +59,8 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public List<Transaction> selectTransactionInfoBySellerId(Long SellerId) {
         log.info("Select transaction info by seller id");
-        transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("trans_seller_id", SellerId));
-        if (transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("trans_seller_id", SellerId)) != null) {
+//        transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("seller_id", SellerId));
+        if (transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("seller_id", SellerId)) != null) {
             log.info("Success to select transaction info by seller id");
             return transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("trans_seller_id", SellerId));
         } else {
@@ -68,16 +68,29 @@ public class TransactionServiceImpl implements TransactionService {
             return null;
         }
     }
+
     @Override
     public List<Transaction> selectTransactionInfoByEstateId(Long EstateId) {
         log.info("Select transaction info by estate id");
-        transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("trans_estate_id", EstateId));
+//        transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("trans_estate_id", EstateId));
         if (transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("trans_estate_id", EstateId)) != null) {
             log.info("Success to select transaction info by estate id");
             return transactionMapper.selectList(new QueryWrapper<>(new Transaction()).eq("trans_estate_id", EstateId));
         } else {
             log.info("Fail to select transaction info by estate id");
             return null;
+        }
+    }
+
+    @Override
+    public String deleteUndoneTransactionByEstateId(Long EstateId) {
+        log.info("Delete undone transaction by estate id");
+        if (transactionMapper.delete(new QueryWrapper<>(new Transaction()).eq("trans_estate_id", EstateId).eq("trans_status", false)) >= 0) {
+            log.info("Success to delete undone transaction by estate id");
+            return "Success";
+        } else {
+            log.info("Fail to delete undone transaction by estate id");
+            return "Fail";
         }
     }
 }

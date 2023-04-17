@@ -116,6 +116,7 @@ public class TransactionController {
         }*/
         return map;
     }
+
     @GetMapping("/request-transaction")
     public Map<String, Object> requestTransaction(@RequestParam Long userId, @RequestParam String buyer_signature) throws Exception {
         log.info("request transaction request");
@@ -139,11 +140,13 @@ public class TransactionController {
             log.info("Decrypted buyer signature: " + rootNode);
             Long sellerId = Long.valueOf(rootNode.get("sellerId").asText());
             Long estateId = Long.valueOf(rootNode.get("estateId").asText());
+            Integer estatePrice = Integer.valueOf(rootNode.get("estatePrice").asText());
             Transaction newRec = new Transaction();
             log.info("set transaction info");
             newRec.setBuyerId(userId);
             newRec.setSellerId(sellerId);
             newRec.setEstateId(estateId);
+            newRec.setTransPrice(estatePrice);
             transactionService.insertTransactionInfo(newRec);
             log.info("change estate status");
             Estate currentEstate = estateService.selectEstateInfoById(estateId);
@@ -153,7 +156,7 @@ public class TransactionController {
             log.info("successfully insert transaction info");
             map.put("resultCode", "1");
             map.put("resultMsg", "request transaction sent");
-            map.put("data", "");
+            map.put("data", "accept");
 
         } catch (Exception e) {
             log.info("Exception: " + e.getMessage());
@@ -165,25 +168,10 @@ public class TransactionController {
         return map;
     }
 
-    @PostMapping("/accept-transition")
-    public Map<String, Object> acceptTransaction(@RequestParam Long sellerId, @RequestParam String buyer_signature) throws Exception {
-        log.info("accept transaction request");
-        Map<String, Object> map = new HashMap<>(4);
-
-        User seller = userService.selectUserInfoById(sellerId);
-
-        if (seller == null) {
-            log.info("seller does not exist");
-            map.put("resultCode", "0");
-            map.put("resultMsg", "verify reject: seller does not exist");
-            map.put("data", "reject");
-            return map;
-        } //judge whether seller exists
-
-        String sKey = seller.getPrivateKey();
-
-        String seller_signature = encryptionUtils.encrypt(buyer_signature, sKey);
-
-        return map;
-    }
+//    @GetMapping("/accept-transition")
+//    public Map<String, Object> getTransaction(@RequestParam Long userId, @RequestParam Long transactionId) {
+//        log.info("accept transaction request");
+//        Map<String, Object> map = new HashMap<>(3);
+//
+//    }
 }

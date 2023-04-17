@@ -22,6 +22,8 @@ public class Transaction {
 
     private Long buyerId;
 
+    private Integer transPrice;
+
     private Timestamp transTime;
 
     private String signature;

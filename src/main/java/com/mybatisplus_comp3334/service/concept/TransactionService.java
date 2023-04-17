@@ -10,5 +10,5 @@ public interface TransactionService {
     List<Transaction> selectTransactionInfoByBuyerId(Long BuyerId);
     List<Transaction> selectTransactionInfoBySellerId(Long SellerId);
     List<Transaction> selectTransactionInfoByEstateId(Long EstateId);
-
+    String deleteUndoneTransactionByEstateId(Long EstateId);
 }

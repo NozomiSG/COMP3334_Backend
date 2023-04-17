@@ -33,6 +33,7 @@ create table transaction
     estate_id           int null,
     buyer_id            int null,
     seller_id           int null,
+    trans_price         int null,
     trans_time          timestamp null,
     signature           varchar(1200) null,
     trans_hash          varchar(100) null,
