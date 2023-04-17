@@ -132,9 +132,8 @@ public class TransactionController {
         } //judge whether buyer exists
 
         String bKey = buyer.getPrivateKey();
-        log.info("Decrypted buyer signature: " + buyer_signature);
+        log.info("Decrypted buyer signature");
         String decrypted = encryptionUtils.decrypt(buyer_signature, bKey);
-        log.info("Decrypted buyer signature: " + decrypted);
         try {
             JsonNode rootNode = new ObjectMapper().readTree(decrypted); //read json
             log.info("Decrypted buyer signature: " + rootNode);
@@ -142,6 +141,21 @@ public class TransactionController {
             Long estateId = Long.valueOf(rootNode.get("estateId").asText());
             Integer estatePrice = Integer.valueOf(rootNode.get("estatePrice").asText());
             Transaction newRec = new Transaction();
+            log.info("check whether exist undone transaction");
+            Transaction currentTrans = transactionService.selectUndoneTransactionByEstateId(estateId);
+            if (currentTrans != null) {
+                log.info("compare price");
+                if (currentTrans.getTransPrice() > estatePrice) {
+                    log.info("request transaction reject: price lower than current transaction");
+                    map.put("resultCode", "0");
+                    map.put("resultMsg", "request transaction reject: price lower than current transaction");
+                    map.put("data", "reject");
+                    return map;
+                } else {
+                    log.info("delete current transaction");
+                    transactionService.deleteUndoneTransactionByEstateId(estateId);
+                }
+            }
             log.info("set transaction info");
             newRec.setBuyerId(userId);
             newRec.setSellerId(sellerId);
@@ -151,6 +165,7 @@ public class TransactionController {
             log.info("change estate status");
             Estate currentEstate = estateService.selectEstateInfoById(estateId);
             currentEstate.setEstateStatus(true);
+            currentEstate.setEstatePrice(estatePrice);
             estateService.updateEstateInfo(currentEstate);
             log.info("successfully change estate status");
             log.info("successfully insert transaction info");
@@ -163,7 +178,7 @@ public class TransactionController {
             log.info("request transaction reject: invalid request");
             map.put("resultCode", "0");
             map.put("resultMsg", "request transaction reject: invalid request");
-            map.put("data", "");
+            map.put("data", "reject");
         }
         return map;
     }

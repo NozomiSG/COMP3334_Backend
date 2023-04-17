@@ -93,4 +93,10 @@ public class TransactionServiceImpl implements TransactionService {
             return "Fail";
         }
     }
+
+    @Override
+    public Transaction selectUndoneTransactionByEstateId(Long EstateId) {
+        log.info("Select undone transaction by estate id");
+        return transactionMapper.selectOne(new QueryWrapper<>(new Transaction()).eq("trans_estate_id", EstateId).eq("trans_status", false));
+    }
 }
