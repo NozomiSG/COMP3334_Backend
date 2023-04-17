@@ -7,6 +7,7 @@ import com.mybatisplus_comp3334.service.concept.EstateService;
 import com.mybatisplus_comp3334.service.concept.TransactionService;
 import com.mybatisplus_comp3334.service.concept.UserService;
 import com.mybatisplus_comp3334.util.EncryptionUtils;
+import com.mybatisplus_comp3334.util.HashUtils;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -37,8 +38,11 @@ public class TransactionController {
     @Autowired
     EncryptionUtils encryptionUtils;
 
+    @Autowired
+    HashUtils hashUtils;
+
     @PostMapping("/insert-transaction") //to be edited after completion of front end: input as encrypted/signature String
-    public Map<String, Object> insertTransaction(@RequestParam Long buyerId, @RequestParam Long sellerId, @RequestParam String transString) throws Exception {
+    public Map<String, Object> insertTransaction(@RequestParam Long buyerId, @RequestParam Long sellerId, @RequestParam String transString1, @RequestParam String transString2) throws Exception {
         log.info("insert transaction request");
         Map<String, Object> map = new HashMap<>(4);
 
@@ -61,59 +65,48 @@ public class TransactionController {
             return map;
         } //judge whether seller exists
 
-        String bKey = buyer.getPrivateKey(), sKey = seller.getPrivateKey();
-
-        String trans_buyerDecrypted = encryptionUtils.decrypt(transString, bKey);
-        String transString_decrypted = encryptionUtils.decrypt(trans_buyerDecrypted, sKey);
 
         try { //sample json format: "{}"
+            log.info("decrypt transaction info");
+            String bKey = buyer.getPrivateKey(), sKey = seller.getPrivateKey();
+            String trans_buyerDecrypted = encryptionUtils.decrypt(transString1, sKey)+encryptionUtils.decrypt(transString2, sKey);
+            String transString_decrypted = encryptionUtils.decrypt(trans_buyerDecrypted, bKey);
+            log.info("transform decrypted string into json");
+            log.info("transString_decrypted: "+transString_decrypted);
             JsonNode rootNode = new ObjectMapper().readTree(transString_decrypted); //read json
 
             Date date = new Date();
             Long estateId = Long.valueOf(rootNode.get("estateId").asText());
             Timestamp currentTime = new Timestamp(date.getTime());
-
             Transaction newRec = new Transaction();
 
             newRec.setBuyerId(buyerId);
             newRec.setSellerId(sellerId);
             newRec.setEstateId(estateId);
             newRec.setTransTime(currentTime);
+            newRec.setTransStatus(true);
+            newRec.setTransPrice(Integer.valueOf(rootNode.get("estatePrice").asText()));
+            newRec.setSignature(transString1+transString2);
 
-            transactionService.insertTransactionInfo(newRec);
-
-            estateService.selectEstateInfoById(estateId).setEstateOwnerId(buyerId);
+            transactionService.updateTransactionInfo(newRec);
+            Estate currentEstate = estateService.selectEstateInfoById(estateId);
+           currentEstate.setEstateOwnerId(buyerId);
+           currentEstate.setEstatePrice(Integer.valueOf(rootNode.get("estatePrice").asText()));
+           currentEstate.setEstateStatus(false);
+           estateService.updateEstateInfo(currentEstate);
             //transactionService.insertTransactionInfo(estate);
             //to be continued...
             map.put("resultCode", "1");
             map.put("resultMsg", "insert transaction accept");
-            map.put("data", "");
+            map.put("data", "accept");
 
         } catch (Exception e) { //string not able to recognise
+            log.info("Output exception: " + e.getMessage());
             log.info("insert transaction reject: invalid request");
             map.put("resultCode", "0");
             map.put("resultMsg", "insert transaction reject: invalid request");
-            map.put("data", "");
+            map.put("data", "reject");
         }
-        /*
-        if (transaction == null) {
-            log.info("insert transaction reject: invalid request");
-            map.put("resultCode", "0");
-            map.put("resultMsg", "insert transaction reject: invalid request");
-            map.put("data", "");
-        } else {
-            log.info("insert transaction accept");
-            transactionService.insertTransactionInfo(transaction);
-
-            estateService.selectEstateInfoById(transaction.getEstateId()).setEstateOwnerId(transaction.getBuyerId());
-            //Switch owner for the estate
-
-
-            map.put("resultCode", "1");
-            map.put("resultMsg", "insert transaction accept");
-            map.put("data", "");
-
-        }*/
         return map;
     }
 
@@ -162,6 +155,7 @@ public class TransactionController {
             newRec.setSellerId(sellerId);
             newRec.setEstateId(estateId);
             newRec.setTransPrice(estatePrice);
+            newRec.setSignature(buyer_signature);
             transactionService.insertTransactionInfo(newRec);
             log.info("change estate status");
             Estate currentEstate = estateService.selectEstateInfoById(estateId);
@@ -216,6 +210,7 @@ public class TransactionController {
         log.info("return transaction info");
         map.put("resultCode", "1");
         map.put("resultMsg", "successfully accepted transaction");
+        log.info("transaction info: " + transaction);
         map.put("data", transaction);
         return map;
     }

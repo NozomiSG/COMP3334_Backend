@@ -98,7 +98,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public String deleteUndoneTransactionByEstateId(Long EstateId) {
         log.info("Delete undone transaction by estate id");
-        if (transactionMapper.delete(new QueryWrapper<>(new Transaction()).eq("trans_estate_id", EstateId).eq("trans_status", false)) >= 0) {
+        if (transactionMapper.delete(new QueryWrapper<>(new Transaction()).eq("estate_id", EstateId).eq("trans_status", false)) >= 0) {
             log.info("Success to delete undone transaction by estate id");
             return "Success";
         } else {
