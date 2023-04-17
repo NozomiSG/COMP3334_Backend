@@ -24,4 +24,6 @@ public class TransactionRecord {
 
     private Timestamp transactionTime;
 
+    private  String hashValue;
+
 }
