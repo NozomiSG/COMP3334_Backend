@@ -153,19 +153,19 @@ public class EstateController {
             return map;
         }
         log.info("request estate all info request");
-        if (estateService.selectAllEstateInfo() == null) {
+        if (estateService.selectAllEstateExceptOwner(id) == null) {
             log.info("request estate all info reject: invalid request");
             map.put("resultCode", "0");
             map.put("resultMsg", "request estate all info reject: invalid request");
             map.put("data", "reject");
         } else {
-            List<Estate> estates = estateService.selectAllEstateInfo();
+            List<Estate> estates = estateService.selectAllEstateExceptOwner(id);
             log.info("Encrypt estate: "+estates.toString());
 //            String encryptedEstateInfo = encryptionUtils.encrypt(estateService.selectAllEstateInfo().toString(), publicKey);
             log.info("request estate all info accept");
             map.put("resultCode", "1");
             map.put("resultMsg", "request estate all info accept");
-            map.put("data", estateService.selectAllEstateInfo());
+            map.put("data", estates);
         }
         return map;
     }

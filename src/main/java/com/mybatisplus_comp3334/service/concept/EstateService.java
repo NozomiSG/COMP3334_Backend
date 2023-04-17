@@ -11,4 +11,5 @@ public interface EstateService {
     Estate selectEstateInfoById(Long id);
     List<Estate> selectEstateInfoByOwnerId(Long ownerId);
     List<Estate> selectAllEstateInfo();
+    List<Estate> selectAllEstateExceptOwner(Long ownerId);
 }

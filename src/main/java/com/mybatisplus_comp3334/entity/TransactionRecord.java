@@ -22,12 +22,12 @@ public class TransactionRecord {
 
     private Long buyerId;
 
-    private Timestamp transactionTime;
+    private Timestamp transTime;
 
-    private String signatureString;
+    private String signature;
 
-    private  String hashValue;
+    private String transHash;
 
-    private Boolean status;
+    private Boolean transStatus;
 
 }

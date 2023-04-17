@@ -22,8 +22,6 @@ public class Estate {
 
     private Integer estatePrice;
 
-    private String estateImage;
-
-    private Boolean status;
+    private Boolean estateStatus;
 
 }

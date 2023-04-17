@@ -92,5 +92,15 @@ public class EstateServiceImpl implements EstateService {
         }
     }
 
-
+    @Override
+    public List<Estate> selectAllEstateExceptOwner(Long ownerId) {
+        log.info("Select all estate info except owner");
+        if (estateMapper.selectList(new QueryWrapper<>(new Estate()).ne("estate_owner_id", ownerId)) != null) {
+            log.info("Success to select all estate info except owner");
+            return estateMapper.selectList(new QueryWrapper<>(new Estate()).ne("estate_owner_id", ownerId));
+        } else {
+            log.info("Fail to select all estate info except owner");
+            return null;
+        }
+    }
 }

@@ -75,8 +75,8 @@ public class UserController {
                 log.info("register accept");
                 log.info("Generate user public key and private key");
                 String[] keyPair = encryptionUtils.generateKeyPair();
-                user.setPrivateKey(keyPair[0]);
-                user.setPublicKey(keyPair[1]);
+                user.setPrivateKey(keyPair[1]);
+                user.setPublicKey(keyPair[0]);
                 userService.insertUserInfo(user);
                 map.put("resultCode", "1");
                 map.put("resultMsg", "register accept");

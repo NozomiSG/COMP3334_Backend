@@ -1,6 +1,5 @@
 package com.mybatisplus_comp3334.controller;
 
-import com.mybatisplus_comp3334.entity.Estate;
 import com.mybatisplus_comp3334.entity.TransactionRecord;
 import com.mybatisplus_comp3334.entity.User;
 import com.mybatisplus_comp3334.service.concept.EstateService;
@@ -37,7 +36,7 @@ public class TransactionController {
     @Autowired
     EncryptionUtils encryptionUtils;
 
-    @PostMapping("/insert-transaction") //to be edited after completion of front end: input as encrypted/signatured String
+    @PostMapping("/insert-transaction") //to be edited after completion of front end: input as encrypted/signature String
     public Map<String, Object> insertTransaction(@RequestParam Long buyerId, @RequestParam Long sellerId, @RequestParam String transString) throws Exception {
         log.info("insert transaction request");
         Map<String, Object> map = new HashMap<>(4);
@@ -78,8 +77,7 @@ public class TransactionController {
             newRec.setBuyerId(buyerId);
             newRec.setSellerId(sellerId);
             newRec.setEstateId(estateId);
-            newRec.setTransactionTime(currentTime);
-            newRec.setStatus(false);
+            newRec.setTransTime(currentTime);
 
             transactionService.insertTransactionInfo(newRec);
 
@@ -118,11 +116,10 @@ public class TransactionController {
         return map;
     }
     @GetMapping("/request-transaction")
-    public Map<String, Object> requestTransaction(@RequestParam Long buyerId, @RequestParam String buyer_signature) throws Exception {
+    public Map<String, Object> requestTransaction(@RequestParam Long userId, @RequestParam String buyer_signature) throws Exception {
         log.info("request transaction request");
         Map<String, Object> map = new HashMap<>(4);
-
-        User buyer = userService.selectUserInfoById(buyerId);
+        User buyer = userService.selectUserInfoById(userId);
 
         if (buyer == null) {
             log.info("buyer does not exist");
@@ -133,7 +130,7 @@ public class TransactionController {
         } //judge whether buyer exists
 
         String bKey = buyer.getPrivateKey();
-
+        log.info("Decrypted buyer signature: " + buyer_signature);
         String decrypted = encryptionUtils.decrypt(buyer_signature, bKey);
 
         try {
@@ -144,10 +141,9 @@ public class TransactionController {
 
             TransactionRecord newRec = new TransactionRecord();
 
-            newRec.setBuyerId(buyerId);
+            newRec.setBuyerId(userId);
             newRec.setSellerId(sellerId);
             newRec.setEstateId(estateId);
-            newRec.setStatus(true);
 
             transactionService.insertTransactionInfo(newRec);
 
