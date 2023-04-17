@@ -143,6 +143,7 @@ public class TransactionController {
             Transaction newRec = new Transaction();
             log.info("check whether exist undone transaction");
             Transaction currentTrans = transactionService.selectUndoneTransactionByEstateId(estateId);
+
             if (currentTrans != null) {
                 log.info("compare price");
                 if (currentTrans.getTransPrice() > estatePrice) {
