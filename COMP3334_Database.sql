@@ -46,8 +46,7 @@ create table transaction
 insert into user (user_password, user_email) values
                                                             ('P@ssword1', 'zgy.peter@gmail.com'),
                                                             ('123*5678Aa', '1762513582@qq.com'),
-                                                            ('zsBdg*e32regh', '912@comp3334.com'),
-                                                            ('Aa!12345', 'megan.wu@connect.polyu.hk');
+                                                            ('zsBdg*e32regh', '912@comp3334.com');
 
 
 insert into estate (estate_name, estate_description, estate_owner_id, estate_price) values
@@ -58,4 +57,5 @@ insert into estate (estate_name, estate_description, estate_owner_id, estate_pri
 insert into estate (estate_name, estate_description, estate_owner_id, estate_price) value ('estate3', 'i dont know i dont know i dont know i dont know i dont know', 4, 20);
 insert into estate (estate_name, estate_description, estate_owner_id, estate_price) value ('estate4', 'i dont know', 4, 40);
 insert into estate (estate_name, estate_description, estate_owner_id, estate_price) value ('estate5646345', 'i dont know', 4, 50);
+insert into estate (estate_name, estate_description, estate_owner_id, estate_price) value ('estate32we#&Y*2', 'hahahahaha', 5, 50);
 

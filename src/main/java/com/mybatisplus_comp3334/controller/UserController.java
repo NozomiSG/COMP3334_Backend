@@ -213,7 +213,8 @@ public class UserController {
             Map<String, String> tem = new HashMap<>(4);
             tem.put("id", checkUser.getUserId().toString());
             tem.put("email", checkUser.getUserEmail());
-            tem.put("publicKey", keypair[0]);
+            tem.put("dynamicPublicKey", keypair[0]);
+            tem.put("staticPublicKey", checkUser.getPublicKey());
             log.info(tem.toString());
             map.put("data", tem);
         }

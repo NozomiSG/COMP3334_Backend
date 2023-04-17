@@ -1,6 +1,7 @@
 package com.mybatisplus_comp3334.controller;
 
-import com.mybatisplus_comp3334.entity.TransactionRecord;
+import com.mybatisplus_comp3334.entity.Estate;
+import com.mybatisplus_comp3334.entity.Transaction;
 import com.mybatisplus_comp3334.entity.User;
 import com.mybatisplus_comp3334.service.concept.EstateService;
 import com.mybatisplus_comp3334.service.concept.TransactionService;
@@ -72,7 +73,7 @@ public class TransactionController {
             Long estateId = Long.valueOf(rootNode.get("estateId").asText());
             Timestamp currentTime = new Timestamp(date.getTime());
 
-            TransactionRecord newRec = new TransactionRecord();
+            Transaction newRec = new Transaction();
 
             newRec.setBuyerId(buyerId);
             newRec.setSellerId(sellerId);
@@ -132,26 +133,30 @@ public class TransactionController {
         String bKey = buyer.getPrivateKey();
         log.info("Decrypted buyer signature: " + buyer_signature);
         String decrypted = encryptionUtils.decrypt(buyer_signature, bKey);
-
+        log.info("Decrypted buyer signature: " + decrypted);
         try {
             JsonNode rootNode = new ObjectMapper().readTree(decrypted); //read json
-
+            log.info("Decrypted buyer signature: " + rootNode);
             Long sellerId = Long.valueOf(rootNode.get("sellerId").asText());
             Long estateId = Long.valueOf(rootNode.get("estateId").asText());
-
-            TransactionRecord newRec = new TransactionRecord();
-
+            Transaction newRec = new Transaction();
+            log.info("set transaction info");
             newRec.setBuyerId(userId);
             newRec.setSellerId(sellerId);
             newRec.setEstateId(estateId);
-
             transactionService.insertTransactionInfo(newRec);
-
+            log.info("change estate status");
+            Estate currentEstate = estateService.selectEstateInfoById(estateId);
+            currentEstate.setEstateStatus(true);
+            estateService.updateEstateInfo(currentEstate);
+            log.info("successfully change estate status");
+            log.info("successfully insert transaction info");
             map.put("resultCode", "1");
             map.put("resultMsg", "request transaction sent");
             map.put("data", "");
 
         } catch (Exception e) {
+            log.info("Exception: " + e.getMessage());
             log.info("request transaction reject: invalid request");
             map.put("resultCode", "0");
             map.put("resultMsg", "request transaction reject: invalid request");

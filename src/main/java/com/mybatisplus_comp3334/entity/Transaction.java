@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionRecord {
+public class Transaction {
 
     @TableId(type = IdType.AUTO)
     private Long transId;
