@@ -49,6 +49,8 @@ insert into estate (estate_name, estate_description, estate_owner_id, estate_pri
                                                             ('Dragon Legend', 'Very expensive', 1, 10),
                                                             ('estate1', 'i dont know', 2, 30);
 
+insert into estate (estate_name, estate_description, estate_owner_id, estate_price) value ('estate2', 'i dont know', 4, 30);
+
 
 
 

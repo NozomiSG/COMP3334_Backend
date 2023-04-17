@@ -24,4 +24,6 @@ public class Estate {
 
     private String estateImage;
 
+    private Boolean status;
+
 }

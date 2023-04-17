@@ -67,14 +67,28 @@ public class TransactionController {
         String transString_decrypted = encryptionUtils.decrypt(trans_buyerDecrypted, sKey);
 
         try { //sample json format: "{}"
-            new ObjectMapper().readTree(transString_decrypted);
+            JsonNode rootNode = new ObjectMapper().readTree(transString_decrypted); //read json
 
             Date date = new Date();
+            Long estateId = Long.valueOf(rootNode.get("estateId").asText());
             Timestamp currentTime = new Timestamp(date.getTime());
 
-            Estate estate = new Estate();
+            TransactionRecord newRec = new TransactionRecord();
+
+            newRec.setBuyerId(buyerId);
+            newRec.setSellerId(sellerId);
+            newRec.setEstateId(estateId);
+            newRec.setTransactionTime(currentTime);
+            newRec.setStatus(false);
+
+            transactionService.insertTransactionInfo(newRec);
+
+            estateService.selectEstateInfoById(estateId).setEstateOwnerId(buyerId);
             //transactionService.insertTransactionInfo(estate);
             //to be continued...
+            map.put("resultCode", "1");
+            map.put("resultMsg", "insert transaction accept");
+            map.put("data", "");
 
         } catch (Exception e) { //string not able to recognise
             log.info("insert transaction reject: invalid request");
@@ -103,6 +117,72 @@ public class TransactionController {
         }*/
         return map;
     }
+    @GetMapping("/request-transaction")
+    public Map<String, Object> requestTransaction(@RequestParam Long buyerId, @RequestParam String buyer_signature) throws Exception {
+        log.info("request transaction request");
+        Map<String, Object> map = new HashMap<>(4);
 
+        User buyer = userService.selectUserInfoById(buyerId);
 
+        if (buyer == null) {
+            log.info("buyer does not exist");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "verify reject: buyer does not exist");
+            map.put("data", "reject");
+            return map;
+        } //judge whether buyer exists
+
+        String bKey = buyer.getPrivateKey();
+
+        String decrypted = encryptionUtils.decrypt(buyer_signature, bKey);
+
+        try {
+            JsonNode rootNode = new ObjectMapper().readTree(decrypted); //read json
+
+            Long sellerId = Long.valueOf(rootNode.get("sellerId").asText());
+            Long estateId = Long.valueOf(rootNode.get("estateId").asText());
+
+            TransactionRecord newRec = new TransactionRecord();
+
+            newRec.setBuyerId(buyerId);
+            newRec.setSellerId(sellerId);
+            newRec.setEstateId(estateId);
+            newRec.setStatus(true);
+
+            transactionService.insertTransactionInfo(newRec);
+
+            map.put("resultCode", "1");
+            map.put("resultMsg", "request transaction sent");
+            map.put("data", "");
+
+        } catch (Exception e) {
+            log.info("request transaction reject: invalid request");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "request transaction reject: invalid request");
+            map.put("data", "");
+        }
+        return map;
+    }
+
+    @PostMapping("/accept-transition")
+    public Map<String, Object> acceptTransaction(@RequestParam Long sellerId, @RequestParam String buyer_signature) throws Exception {
+        log.info("accept transaction request");
+        Map<String, Object> map = new HashMap<>(4);
+
+        User seller = userService.selectUserInfoById(sellerId);
+
+        if (seller == null) {
+            log.info("seller does not exist");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "verify reject: seller does not exist");
+            map.put("data", "reject");
+            return map;
+        } //judge whether seller exists
+
+        String sKey = seller.getPrivateKey();
+
+        String seller_signature = encryptionUtils.encrypt(buyer_signature, sKey);
+
+        return map;
+    }
 }

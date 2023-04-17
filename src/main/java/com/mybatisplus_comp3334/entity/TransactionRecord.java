@@ -24,6 +24,10 @@ public class TransactionRecord {
 
     private Timestamp transactionTime;
 
+    private String signatureString;
+
     private  String hashValue;
+
+    private Boolean status;
 
 }
