@@ -1,6 +1,7 @@
 package com.mybatisplus_comp3334.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.mybatisplus_comp3334.entity.Estate;
 import com.mybatisplus_comp3334.entity.Transaction;
 import com.mybatisplus_comp3334.mapper.TransactionMapper;
 import com.mybatisplus_comp3334.service.concept.TransactionService;
@@ -40,6 +41,18 @@ public class TransactionServiceImpl implements TransactionService {
         } else {
             log.info("Fail to select transaction info by transId");
             return null;
+        }
+    }
+
+    @Override
+    public String updateTransactionInfo(Transaction transaction) {
+        log.info("Update transaction info");
+        if (transactionMapper.updateById(transaction)>=0) {
+            log.info("Success to update transaction info");
+            return "Success";
+        } else {
+            log.info("Fail to update transaction info");
+            return "Fail";
         }
     }
 

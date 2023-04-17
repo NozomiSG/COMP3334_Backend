@@ -184,10 +184,39 @@ public class TransactionController {
         return map;
     }
 
-//    @GetMapping("/accept-transition")
-//    public Map<String, Object> getTransaction(@RequestParam Long userId, @RequestParam Long transactionId) {
-//        log.info("accept transaction request");
-//        Map<String, Object> map = new HashMap<>(3);
-//
-//    }
+    @GetMapping("/accept-transaction")
+    public Map<String, Object> acceptTransaction(@RequestParam Long userId, @RequestParam Long transactionId) throws Exception { //userId - seller
+        log.info("accept transaction request");
+        Map<String, Object> map = new HashMap<>(4);
+
+        User seller = userService.selectUserInfoById(userId);
+
+        if (seller == null) {
+            log.info("seller does not exist");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "verify reject: seller does not exist");
+            map.put("data", "reject");
+            return map;
+        }
+
+        String sKey = seller.getPrivateKey();
+
+        Transaction transaction = transactionService.selectTransactionInfoByTransId(transactionId);
+        Estate estate = estateService.selectEstateInfoById(transaction.getEstateId());
+
+        String newSignature = encryptionUtils.encrypt(transaction.getSignature(), seller.getPrivateKey());
+        transaction.setSignature(newSignature);
+
+        estate.setEstateOwnerId(transaction.getBuyerId());
+        transaction.setTransStatus(false);
+
+        estate.setEstateStatus(false);
+
+        estateService.updateEstateInfo(estate);
+        transactionService.updateTransactionInfo(transaction);
+
+                log.info("successfully change estate status to false");
+        return map;
+    }
+}
 }
