@@ -185,7 +185,7 @@ public class TransactionController {
     }
 
     @GetMapping("/accept-transaction")
-    public Map<String, Object> acceptTransaction(@RequestParam Long userId, @RequestParam Long transactionId) throws Exception { //userId - seller
+    public Map<String, Object> acceptTransaction(@RequestParam Long userId, @RequestParam Long estateId) throws Exception { //userId - seller
         log.info("accept transaction request");
         Map<String, Object> map = new HashMap<>(4);
 
@@ -198,7 +198,7 @@ public class TransactionController {
             map.put("data", "reject");
             return map;
         }
-        Transaction transaction = transactionService.selectTransactionInfoByTransId(transactionId);
+        Transaction transaction = transactionService.selectUndoneTransactionByEstateId(estateId);
         if (transaction == null) {
             log.info("transaction does not exist");
             map.put("resultCode", "0");
