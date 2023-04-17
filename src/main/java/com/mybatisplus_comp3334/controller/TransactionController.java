@@ -215,7 +215,9 @@ public class TransactionController {
         estateService.updateEstateInfo(estate);
         transactionService.updateTransactionInfo(transaction);
 
-                log.info("successfully change estate status to false");
+        map.put("resultCode", "0");
+        map.put("resultMsg", "successfully accepted transaction");
+        map.put("data", "reject");
         return map;
     }
 }
