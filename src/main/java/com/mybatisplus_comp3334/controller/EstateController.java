@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.mybatisplus_comp3334.service.concept.EstateService;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Log
@@ -127,11 +129,11 @@ public class EstateController {
             map.put("resultMsg", "request estate info from user reject: invalid request");
             map.put("data", "reject");
         } else {
-            String encryptedEstateInfo = encryptionUtils.encrypt(estateService.selectEstateInfoByOwnerId(id).toString(), publicKey);
+//            String encryptedEstateInfo = encryptionUtils.encrypt(estateService.selectEstateInfoByOwnerId(id).toString(), publicKey);
             log.info("request estate info from user accept");
             map.put("resultCode", "1");
             map.put("resultMsg", "request estate info from user accept");
-            map.put("data", encryptedEstateInfo);
+            map.put("data", estateService.selectEstateInfoByOwnerId(id));
         }
         return map;
     }
@@ -140,7 +142,7 @@ public class EstateController {
     public Map<String, Object> requestEstateAllInfo(@RequestParam Long id) throws Exception {
         Map<String, Object> map = new HashMap<>(3);
 
-        log.info("get private key by id");
+        log.info("get private and public key by id");
         String privateKey = (String)redisUtils.getCache(id+"_privateKey");
         String publicKey = (String)redisUtils.getCache(id+"_publicKey");
         if (privateKey == null||publicKey == null) {
@@ -157,12 +159,26 @@ public class EstateController {
             map.put("resultMsg", "request estate all info reject: invalid request");
             map.put("data", "reject");
         } else {
-            String encryptedEstateInfo = encryptionUtils.encrypt(estateService.selectAllEstateInfo().toString(), publicKey);
+            List<Estate> estates = estateService.selectAllEstateInfo();
+            log.info("Encrypt estate: "+estates.toString());
+//            String encryptedEstateInfo = encryptionUtils.encrypt(estateService.selectAllEstateInfo().toString(), publicKey);
             log.info("request estate all info accept");
             map.put("resultCode", "1");
             map.put("resultMsg", "request estate all info accept");
-            map.put("data", encryptedEstateInfo);
+            map.put("data", estateService.selectAllEstateInfo());
         }
+        return map;
+    }
+
+    public Map<String, Object> toMapResult(String msg, List<Estate> lst, String publicKey) throws Exception {
+        Map<String, Object> map = new HashMap<String, Object>(3);
+        map.put("resultCode", "1");
+        map.put("resultMsg", msg);
+        List<String> tmp = new ArrayList<>();
+        for(Estate x: lst) {
+            tmp.add(encryptionUtils.encrypt(x.toString(), publicKey));
+        }
+        map.put("data", tmp);
         return map;
     }
 }
