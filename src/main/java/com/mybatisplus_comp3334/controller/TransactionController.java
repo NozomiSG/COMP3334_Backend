@@ -198,26 +198,25 @@ public class TransactionController {
             map.put("data", "reject");
             return map;
         }
-
-        String sKey = seller.getPrivateKey();
-
         Transaction transaction = transactionService.selectTransactionInfoByTransId(transactionId);
-        Estate estate = estateService.selectEstateInfoById(transaction.getEstateId());
-
-        String newSignature = encryptionUtils.encrypt(transaction.getSignature(), seller.getPrivateKey());
-        transaction.setSignature(newSignature);
-
-        estate.setEstateOwnerId(transaction.getBuyerId());
-        transaction.setTransStatus(false);
-
-        estate.setEstateStatus(false);
-
-        estateService.updateEstateInfo(estate);
-        transactionService.updateTransactionInfo(transaction);
-
-        map.put("resultCode", "0");
+        if (transaction == null) {
+            log.info("transaction does not exist");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "verify reject: transaction does not exist");
+            map.put("data", "reject");
+            return map;
+        }
+        if (transaction.getSellerId() != userId) {
+            log.info("seller does not match");
+            map.put("resultCode", "0");
+            map.put("resultMsg", "verify reject: seller does not match");
+            map.put("data", "reject");
+            return map;
+        }
+        log.info("return transaction info");
+        map.put("resultCode", "1");
         map.put("resultMsg", "successfully accepted transaction");
-        map.put("data", "reject");
+        map.put("data", transaction);
         return map;
     }
 }
